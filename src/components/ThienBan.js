@@ -6,11 +6,30 @@ export default function ThienBan(props){
         setInfo(props);
         }, [props]
     );
-    console.log(props)
+
+    var date = new Date()
+    var today =date.toLocaleString('en-GB')
     const thiencan = [0, "Giáp", "Ất", "Bính", "Đinh", "Mậu", "Kỷ", "Canh", "Tân", "Nhâm", "Quý"]
     const diachi = [0, "Tý", "Sửu", "Dần", "Mão", "Thìn", "Tỵ", "Ngọ", "Mùi", "Thân", "Dậu", "Tuất", "Hợi"]
     var gio = parseInt(1.5+ info.gio/2)
-    var age = info.namxem - info.namam +1
+
+    var age, nam, thang, ngay, thangam, ngayam
+    if (info.checked ===false) {
+        age = info.namxem - info.nama + 1
+        ngay = info.ngay
+        thang =info.thang
+        nam = info.nam
+        ngayam = info.ngaya
+        thangam = info.thanga
+    }
+    if (info.checked ===true) {
+        age = info.namxem - info.nam + 1
+        ngay = info.ngaya
+        thang =info.thanga
+        nam = info.nama
+        ngayam = info.ngay
+        thangam = info.thang
+    }
     if (gio ===13){
         gio = 1
     }
@@ -35,7 +54,7 @@ export default function ThienBan(props){
     //cục cần sửa
     return(
         <div className="noidung">
-            {/*<div className="header">Ngày xem: {{:today}}</div>*/}
+            <div className="header">Ngày xem: {today}</div>
             <div className="grid">
                 <div className="col col-3 cotTrai">Họ tên</div>
                 <div className="col col-9 cotPhai">{info.name}</div>
@@ -54,8 +73,8 @@ export default function ThienBan(props){
             <div class="grid">
                 <div class="col col-3 cotTrai">Ngày sinh</div>
                 <div class="col col-9 cotPhai">
-                    <div>{info.ngay}/{info.thang}/{thiencan[info.thiencan]} {diachi[info.diachi]} (Âm lịch)</div>
-                {/*        <div>{{:ngayDuong}}/{{:thangDuong}}/{{:namDuong}} (Dương lịch)</div>*/}
+                    <div>{ngayam}/{thangam}/{thiencan[info.thiencan]} {diachi[info.diachi]} (Âm lịch)</div>
+                    <div>{ngay}/{thang}/{nam} (Dương lịch)</div>
                 </div>
             </div>
 

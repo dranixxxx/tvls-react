@@ -20,7 +20,7 @@ class App extends React.Component {
         const sao = await res.data;
         this.setSao(sao);
       });
-      axios.get(`http://localhost:1337/loigiais`, {
+      axios.get(`http://localhost:1337/loigiais?_limit=-1`, {
       }).then(async (res) => {
         // if res comes back not valid, token is not valid
         // delete the token and log the user out on client

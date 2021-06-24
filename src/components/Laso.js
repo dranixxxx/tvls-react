@@ -6,6 +6,7 @@ import ReactDOM from "react-dom";
 import ThienBan from "./ThienBan";
 //import Tooltip from '@material-ui/core/Tooltip';
 import { computeDateToLunarDate } from "amlich.js"
+import { convertLunar2Solar } from "./AmDuongLich"
 
 export default function Laso() {
   const { sao, setSao } = useContext(Context);
@@ -25,10 +26,10 @@ export default function Laso() {
                                                               {cungid:12, sao: [], tamhop: [], cungten: "Hợi", hanhcung: "hanhThuy"}]
   //const [ cung1, setCung1 ] = useState({cungchu: "", cungthan:false, cungdaihan:"", cungtieuhan:"", chinhtinh:"", saotot:"", saoxau:""})
   const [ ThapNhiCung, setThapNhiCung ] = useState(data)
-  const [ ThongTin, setThongTin] = useState({nam:null, thang: 0, ngay: null, gio: null, gioitinh: 1, timezone:7, name:"", namxem:null, cuc:null, thiencan:null, diachi: null, namam:null, thangam:null, ngayam:null })
-  const [input, setInput] = useState({hh:0, dd:1, mm:1, yy:1, sex:1, timezone:7, name: "", namxem: 2020, checkbox:false})
+  const [ ThongTin, setThongTin] = useState({nam:null, thang: 0, ngay: null, gio: null, gioitinh: 1, timezone:7, name:"", namxem:null, cuc:null, thiencan:null, diachi: null, nama:null, thanga:1, ngaya:null, checked: false })
+  const [input, setInput] = useState({hh:0, dd:new Date().getDate(), mm:new Date().getMonth()+1, yy:new Date().getFullYear(), sex:1, timezone:7, name: "", namxem: new Date().getFullYear(), checkbox:false})
   //set input vào time
-  const onSetThongTin = (yy, mm, dd, hh, gioitinh, timezone, name, namxem) => {
+  const onSetThongTin = (yy, mm, dd, hh, gioitinh, timezone, name, namxem, checked) => {
     setThongTin({
       nam: yy,
       thang: mm,
@@ -37,12 +38,13 @@ export default function Laso() {
       gioitinh: gioitinh,
       timezone:timezone,
       name:name,
-      namxem: namxem
+      namxem: namxem,
+      checked: checked
     });
   };
 
-  function setActiveDate(nam, thang, ngay, gio, gioitinh, timezone, name, namxem) {
-    onSetThongTin(nam, thang, ngay, gio, gioitinh, timezone, name, namxem);
+  function setActiveDate(nam, thang, ngay, gio, gioitinh, timezone, name, namxem, checked) {
+    onSetThongTin(nam, thang, ngay, gio, gioitinh, timezone, name, namxem, checked);
   }
 
   const handleReset = (() => {
@@ -51,16 +53,30 @@ export default function Laso() {
       }
   })
 
-  var amlich = computeDateToLunarDate(ThongTin.ngay, ThongTin.thang, ThongTin.nam, 7)
+  let doingay
+  if (ThongTin.nam!= null && input.checkbox===false){
+  //âm lịch
+  doingay = computeDateToLunarDate(ThongTin.ngay, ThongTin.thang, ThongTin.nam, 7)
   //ThongTin.thiencan
-  if (ThongTin.nam!= null){
-  ThongTin.thiencan = (parseInt(amlich.lunarYear)+7)%10
+  ThongTin.thiencan = (parseInt(doingay.lunarYear)+7)%10
   //ThongTin.diachi
-  ThongTin.diachi = (parseInt(amlich.lunarYear)+9)%12
+  ThongTin.diachi = (parseInt(doingay.lunarYear)+9)%12
+  ThongTin.nama = doingay.lunarYear
+  ThongTin.ngaya = doingay.lunarDay
+  ThongTin.thanga = doingay.lunarMonth
   }
-  ThongTin.namam = amlich.lunarYear
-  ThongTin.ngayam = amlich.lunarDay
-  ThongTin.thangam = amlich.lunarMonth
+  //đổi dương lịch bị sai
+  if (ThongTin.nam!= null && input.checkbox===true){
+  //dương lịch
+  doingay = convertLunar2Solar(ThongTin.ngay, ThongTin.thang, ThongTin.nam, false, 7)
+  //ThongTin.thiencan
+  ThongTin.thiencan = (parseInt(ThongTin.nam)+7)%10
+  //ThongTin.diachi
+  ThongTin.diachi = (parseInt(ThongTin.nam)+9)%12
+  ThongTin.nama = doingay.year
+  ThongTin.ngaya = doingay.day
+  ThongTin.thanga = doingay.month
+  }
 
   if (ThongTin.diachi===0){
       ThongTin.diachi=12;
@@ -70,8 +86,16 @@ export default function Laso() {
   }
   var tc =parseInt(ThongTin.thiencan);//thiên can
   var dc =parseInt(ThongTin.diachi);//địa chi
-  var tt = parseInt(ThongTin.thangam)//tháng
-  var nn = parseInt(ThongTin.ngayam);//ngày
+  let tt,nn;
+  if (input.checkbox === false) {
+      tt = parseInt(ThongTin.thanga)//tháng
+      nn = parseInt(ThongTin.ngaya);//ngày
+  }
+  //đổi dương lịch bị sai
+  if (input.checkbox === true) {
+      tt = parseInt(ThongTin.thang)//tháng
+      nn = parseInt(ThongTin.ngay);//ngày
+  }
   var timezone = parseInt(ThongTin.timezone)
   var hh =parseInt(1.5+ ThongTin.gio/2);//giờ toán tử cuối là giờ sinh theo 24h
   var gioitinh = parseInt(ThongTin.gioitinh)//gioitinh
@@ -81,7 +105,6 @@ export default function Laso() {
   var timtieuhan = [{tieuhan: "Tý"}, {tieuhan: "Sửu"}, {tieuhan: "Dần"}, {tieuhan: "Mão"}, {tieuhan: "Thìn"}, {tieuhan: "Tỵ"}, {tieuhan: "Ngọ"}, {tieuhan: "Mùi"}, {tieuhan: "Thân"}, {tieuhan: "Dậu"}, {tieuhan: "Tuất"}, {tieuhan: "Hợi"}]
   var timnguyethan = [{nguyethan: "tháng 1"}, {nguyethan: "tháng 2"}, {nguyethan: "tháng 3"}, {nguyethan: "tháng 4"}, {nguyethan: "tháng 5"}, {nguyethan: "tháng 6"}, {nguyethan: "tháng 7"}, {nguyethan: "tháng 8"}, {nguyethan: "tháng 9"}, {nguyethan: "tháng 10"}, {nguyethan: "tháng 11"}, {nguyethan: "tháng 12"}, ]
     //cần sửa
-    console.log(ThongTin)
   var matranNapAm = [
     [0, "G", "Ất", "Bính", "Đinh", "Mậu", "Kỷ", "Canh", "Tân", "Nhâm", "Qúy"],
     [1, 4, 0, 2, 0, 6, 0, 5, 0, 3, 0],
@@ -105,6 +128,12 @@ export default function Laso() {
     else{
         amduongthiencan = -1
     }
+	if (dc % 2 === 1){
+        amduongdiachi = 1
+    }
+    else{
+        amduongdiachi = -1
+    }
     //tìm tiểu hạn
     let khoitieuhan
     if (gioitinh ===1){
@@ -118,7 +147,6 @@ export default function Laso() {
     khoinguyethan = [0, 2, 6, 10, 2, 6, 10, 2, 6, 10, 2, 6, 10, ]}
     if (gioitinh ===-1){
     khoinguyethan = [0, 2, 4, 6, 8, 10, 0, 2, 4, 6, 8, 10, 0, ]}
-    console.log(input)
     ///////////
     for (var a=0 ; a<ThapNhiCung.length;  a++ ){
       //công thức tính cung mệnh(+1 do js array tính từ 0)
@@ -131,10 +159,10 @@ export default function Laso() {
       ThapNhiCung[a]= {...ThapNhiCung[a], ...timdaihan[(b*gioitinh*amduongthiencan+12)%12]}
       //tìm tiểu hạn
       ThapNhiCung[a]= {...ThapNhiCung[a], ...timtieuhan[(a*gioitinh+12+khoitieuhan[dc])%12]}
-      //tìm nguyệt hạn
+      //tìm nguyệt hạn cần tính lại
       ThapNhiCung[a]= {...ThapNhiCung[a], ...timnguyethan[(a+khoinguyethan[dc]+12-(dcnamxem-1)*gioitinh)%12]}
     }
-
+	
     //timcuc
     var vitricungmenh = (3 + tt - hh + 12) % 12;
     var canthanggieng = (tc * 2 + 1) % 10;
@@ -363,8 +391,8 @@ export default function Laso() {
          //an lục cát
          ThapNhiCung[(3+hh)%12].sao.push(sao[60]);//văn khúc59
          ThapNhiCung[(11+12-hh)%12].sao.push(sao[61]);//văn xương58
-         ThapNhiCung[khoiviet[y]].sao.push(sao[62]);//60
-         ThapNhiCung[(3+5-khoiviet[y]+12)%12].sao.push(sao[63]);//61
+         ThapNhiCung[(3+5-khoiviet[y]+12)%12].sao.push(sao[62]);//61
+		 ThapNhiCung[khoiviet[y]].sao.push(sao[63]);//60
          ThapNhiCung[(4+tt-1)%12].sao.push(sao[64]);//62
          ThapNhiCung[(10-tt+1+12)%12].sao.push(sao[65]);//63
          //an long phượng
@@ -444,7 +472,7 @@ export default function Laso() {
 
   async function lapDiaBan(){
         await handleReset()
-        await setActiveDate(parseInt(input.yy), parseInt(input.mm), parseInt(input.dd), input.hh, input.sex, parseInt(input.timezone), input.name, parseInt(input.namxem))
+        await setActiveDate(parseInt(input.yy), parseInt(input.mm), parseInt(input.dd), input.hh, input.sex, parseInt(input.timezone), input.name, parseInt(input.namxem), input.checkbox)
     for (var i =0; i<=11;i++){
     let DacTinh
     //lấy id sao cung tam hợp
@@ -470,7 +498,8 @@ export default function Laso() {
                     DacTinh = loigiai.filter(x => x.saos.every(y => ThapNhiCung[i].tamhop.includes(y.id)) &&
                                                   x.saos.some(y => y.id === a.id) &&
                                                   x.cungs.some(y => y.name === ThapNhiCung[i].cungchu) &&
-                                                  x.lucthans.every(y =>[i+1].includes(y.id))
+                                                  //x.lucthans.every(y =>[i+1].includes(y.id))
+												  x.lucthans.some(y => y.name === ThapNhiCung[i].cungten)
                     )
                     return(
                     <Tooltip placement="right"
@@ -478,7 +507,7 @@ export default function Laso() {
                             <React.Fragment>
                                 {DacTinh.map((b) =>
                                     <>
-                                        <div>{b.name}</div>
+                                        <div>- {b.name}</div>
                                         <div>{b.description}</div>
                                     </>
                                 )}
@@ -504,7 +533,7 @@ export default function Laso() {
                                          <React.Fragment>
                                              {DacTinh.map((b) =>
                                                  <>
-                                                     <div>{b.name}</div>
+                                                     <div>- {b.name}</div>
                                                      <div>{b.description}</div>
                                                  </>
                                              )}
@@ -520,7 +549,7 @@ export default function Laso() {
                                          <React.Fragment>
                                              {DacTinh.map((b) =>
                                                  <>
-                                                     <div>{b.name}</div>
+                                                     <div>- {b.name}</div>
                                                      <div>{b.description}</div>
                                                  </>
                                              )}
@@ -545,7 +574,7 @@ export default function Laso() {
                                          <React.Fragment>
                                              {DacTinh.map((b) =>
                                                  <>
-                                                     <div>{b.name}</div>
+                                                     <div>- {b.name}</div>
                                                      <div>{b.description}</div>
                                                  </>
                                              )}
@@ -561,7 +590,7 @@ export default function Laso() {
                                          <React.Fragment>
                                              {DacTinh.map((b) =>
                                                  <>
-                                                     <div>{b.name}</div>
+                                                     <div>- {b.name}</div>
                                                      <div>{b.description}</div>
                                                  </>
                                              )}
@@ -595,7 +624,7 @@ export default function Laso() {
                             <React.Fragment>
                                 {DacTinh.map((b) =>
                                     <>
-                                        <div>{b.name}</div>
+                                        <div>- {b.name}</div>
                                         <div>{b.description}</div>
                                     </>
                                 )}
@@ -658,6 +687,7 @@ export default function Laso() {
                         Năm xem {" "}
                         <Input
                             type="text"
+                            defaultValue={new Date().getFullYear()}
                             onChange={(e) => {
                               const val = e.target.value;
                               setInput((prevState) => {
@@ -673,6 +703,7 @@ export default function Laso() {
                     <div className="col col-5">
                         <Input
                             type="select"
+                            defaultValue={new Date().getDate()}
                             onChange={(e) => {
                               const val = e.target.value;
                               setInput((prevState) => {
@@ -716,6 +747,7 @@ export default function Laso() {
                         / {" "}
                         <Input
                             type="select"
+                            defaultValue ={new Date().getMonth()+1}
                             onChange={(e) => {
                               const val = e.target.value;
                               setInput((prevState) => {
@@ -741,6 +773,7 @@ export default function Laso() {
                         <Input
                             style={{width:"118px"}}
                             type="text"
+                            defaultValue={new Date().getFullYear()}
                             onChange={(e) => {
                               const val = e.target.value;
                               setInput((prevState) => {
@@ -855,6 +888,7 @@ export default function Laso() {
     </div>
     </div>
 
+    {ThongTin.nam ? (
     <div className="laso border" id="laso">
       <div className="grid">
         <div className="col col-3">
@@ -902,13 +936,6 @@ export default function Laso() {
               className="grid thienBan border-top border-left border-bottom border-right"
               id="thienBan"
             >
-
-              <div>
-                giờ {ThongTin.gio} ngày {ThongTin.ngay} tháng {ThongTin.thang} năm {ThongTin.thiencan}:{ThongTin.diachi}
-              </div>
-              <div>
-                cục {ThongTin.cuc}
-              </div>
               <ThienBan {...ThongTin}/>
             </div>
             <div className="grid">
@@ -953,6 +980,8 @@ export default function Laso() {
         </div>
       </div>
     </div>
+    ) :(null)}
     </div>
+
   );
 }
