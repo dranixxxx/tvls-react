@@ -1,6 +1,6 @@
 .App {
   font-family: sans-serif;
-  text-align: center;
+  /* text-align: center; */
 }
 /*!
  * table-grid (http://mdo.github.io/table-grid)
@@ -21,7 +21,7 @@ body {
     margin: 0;
     padding-bottom: 3rem;
     font-family: "Noto Serif", "Helvetica Neue", Helvetica, Arial, sans-serif;
-    text-align: center;
+    /* text-align: center; */
     background-color: #fff;
     line-height: 19px;
 }
@@ -104,6 +104,7 @@ code {
     font-weight: 300;
     color: rgba(255, 255, 255, 65);
     text-align: center;
+    min-width: 800px;
     /*background-color: #b94a48;*/
 }
 
@@ -662,4 +663,12 @@ button.primary {
 
 .all{
     padding-bottom: 3rem
+}
+
+.actionbtn{
+    padding: 5px
+}
+
+.grid > div{
+    text-align: center;
 }

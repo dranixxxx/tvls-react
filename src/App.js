@@ -13,14 +13,14 @@ class App extends React.Component {
 
   componentDidMount() {
     // grab token value from cookie
-      axios.get(`https://tuvi-backend.herokuapp.com/saos?_limit=-1`, {
+      axios.get(`http://localhost:1337/saos?_limit=-1`, {
       }).then(async (res) => {
         // if res comes back not valid, token is not valid
         // delete the token and log the user out on client
         const sao = await res.data;
         this.setSao(sao);
       });
-      axios.get(`https://tuvi-backend.herokuapp.com/loigiais?_limit=-1`, {
+      axios.get(`http://localhost:1337/loigiais?_limit=-1`, {
       }).then(async (res) => {
         // if res comes back not valid, token is not valid
         // delete the token and log the user out on client

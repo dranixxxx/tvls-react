@@ -1,58 +1,44 @@
 import React, { useState, useEffect } from "react";
+import { LucThapHoaGiap, cuc, sinhkhac } from "../api/HoaGiap";
+import { Button } from "antd";
 
-export default function ThienBan(props){
+export default function ThienBan(props) {
     const [info, setInfo] = useState(props)
     useEffect(() => {
         setInfo(props);
-        }, [props]
+    }, [props]
     );
 
     var date = new Date()
-    var today =date.toLocaleString('en-GB')
+    var today = date.toLocaleString('en-GB')
     const thiencan = [0, "Giáp", "Ất", "Bính", "Đinh", "Mậu", "Kỷ", "Canh", "Tân", "Nhâm", "Quý"]
     const diachi = [0, "Tý", "Sửu", "Dần", "Mão", "Thìn", "Tỵ", "Ngọ", "Mùi", "Thân", "Dậu", "Tuất", "Hợi"]
-    var gio = parseInt(1.5+ info.gio/2)
+    var gio = parseInt(1.5 + info.gio / 2)
 
     var age, nam, thang, ngay, thangam, ngayam
-    if (info.checked ===false) {
+    if (info.checked === false) {
         age = info.namxem - info.nama + 1
         ngay = info.ngay
-        thang =info.thang
+        thang = info.thang
         nam = info.nam
         ngayam = info.ngaya
         thangam = info.thanga
     }
-    if (info.checked ===true) {
+    if (info.checked === true) {
         age = info.namxem - info.nam + 1
         ngay = info.ngaya
-        thang =info.thanga
+        thang = info.thanga
         nam = info.nama
         ngayam = info.ngay
         thangam = info.thang
     }
-    if (gio ===13){
+    if (gio === 13) {
         gio = 1
-    }
-
-    var cuc = info.cuc
-    if (cuc ===2){
-        cuc = "Thủy Nhị Cục"
-    }
-    if (cuc ===3){
-        cuc = "Mộc Tam Cục"
-    }
-    if (cuc ===4){
-        cuc = "Kim Tứ Cục"
-    }
-    if (cuc ===5){
-        cuc = "Thổ Ngũ Cục"
-    }
-    if (cuc ===6){
-        cuc = "Hỏa Lục Cục"
     }
     //bát tự cần sửa
     //cục cần sửa
-    return(
+    
+    return (
         <div className="noidung">
             <div className="header">Ngày xem: {today}</div>
             <div className="grid">
@@ -78,49 +64,49 @@ export default function ThienBan(props){
                 </div>
             </div>
 
-                {/*        <div class="grid">*/}
-                {/*        <div class="col col-3 cotTrai">Bản mệnh</div>*/}
-                {/*        <div class="col col-9 cotPhai">*/}
-                {/*    {{:banMenh}}*/}
-                {/*        </div>*/}
-                {/*        </div>*/}
-
             <div class="grid">
-                <div class="col col-3 cotTrai">Cục</div>
-                <div class="col col-9 cotPhai">
-            {cuc}
+                <div class="col col-3 cotTrai">Bản mệnh</div>
+                <div class={"col col-9 cotPhai "}>
+                    {LucThapHoaGiap((nam - 4) % 60).name}
                 </div>
             </div>
 
-                {/*        <div class="grid">*/}
-                {/*        <div class="col col-3 cotTrai">Mệnh chủ</div>*/}
-                {/*        <div class="col col-9 cotPhai">*/}
-                {/*    {{:menhChu}}*/}
-                {/*        </div>*/}
-                {/*        </div>*/}
+            <div class="grid">
+                <div class="col col-3 cotTrai">Cục</div>
+                <div class={"col col-9 cotPhai "}>
+                    {cuc(info.cuc).name}
+                </div>
+            </div>
 
-                {/*        <div class="grid">*/}
-                {/*        <div class="col col-3 cotTrai">Thân chủ</div>*/}
-                {/*        <div class="col col-9 cotPhai">*/}
-                {/*    {{:thanChu}}*/}
-                {/*        </div>*/}
-                {/*        </div>*/}
+            {/*        <div class="grid">*/}
+            {/*        <div class="col col-3 cotTrai">Mệnh chủ</div>*/}
+            {/*        <div class="col col-9 cotPhai">*/}
+            {/*    {{:menhChu}}*/}
+            {/*        </div>*/}
+            {/*        </div>*/}
 
-                {/*        <div class="grid sinhkhac">*/}
-                {/*    {{:sinhKhac}}*/}
-                {/*        </div>*/}
+            {/*        <div class="grid">*/}
+            {/*        <div class="col col-3 cotTrai">Thân chủ</div>*/}
+            {/*        <div class="col col-9 cotPhai">*/}
+            {/*    {{:thanChu}}*/}
+            {/*        </div>*/}
+            {/*        </div>*/}
+
+            <div class="grid sinhkhac">
+                {sinhkhac(LucThapHoaGiap((nam - 4) % 60).hanhid, cuc(info.cuc).hanhid)}
+            </div>
 
 
-                        <div class="mausac">
-                        <div class="grid">
-                        <span class="col col-2">Màu sắc</span>
-                        <span class="col col-2 hanhKim gioithieuhanh">Kim</span>
-                        <span class="col col-2 hanhThuy gioithieuhanh">Thủy</span>
-                        <span class="col col-2 hanhHoa gioithieuhanh">Hỏa</span>
-                        <span class="col col-2 hanhTho gioithieuhanh">Thổ</span>
-                        <span class="col col-2 hanhMoc gioithieuhanh">Mộc</span>
-                        </div>
-                        </div>
+            <div class="mausac">
+                <div class="grid">
+                    <span class="col col-2">Màu sắc</span>
+                    <span class="col col-2 hanhKim gioithieuhanh">Kim</span>
+                    <span class="col col-2 hanhThuy gioithieuhanh">Thủy</span>
+                    <span class="col col-2 hanhHoa gioithieuhanh">Hỏa</span>
+                    <span class="col col-2 hanhTho gioithieuhanh">Thổ</span>
+                    <span class="col col-2 hanhMoc gioithieuhanh">Mộc</span>
+                </div>
+            </div>
         </div>
     )
 }
